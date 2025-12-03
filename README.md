@@ -31,11 +31,13 @@ Automatic differentiation (autograd) is the technique that powers modern deep le
 ### Core Components
 
 - **`Value` Class**: A scalar value wrapper that tracks computation graphs
+
   - Automatic gradient computation via backpropagation
-  - Support for basic operations: `+`, `-`, `*`, `/`, `**`, `tanh`, `exp`
+  - Support for basic operations: `+`, `-`, `*`, `/`, `**`, `tanh`, `exp`, `relu`
   - Topological sorting for efficient gradient flow
 
 - **Neural Network Architecture**:
+
   - `Neuron`: Single neuron with weights, bias, and activation
   - `Layer`: Collection of neurons forming a layer
   - `MLP`: Multi-Layer Perceptron for building deep networks
@@ -48,7 +50,8 @@ Automatic differentiation (autograd) is the technique that powers modern deep le
 ✅ Gradient computation for all operations  
 ✅ Neural network training with gradient descent  
 ✅ Computation graph visualization  
-✅ Comparison with PyTorch implementation  
+✅ Binary classification with decision boundary visualization  
+✅ Comparison with PyTorch implementation
 
 ---
 
@@ -110,29 +113,44 @@ print(b.grad)   # ∂o/∂b
 ### Prerequisites
 
 ```bash
-pip install numpy matplotlib graphviz jupyter
+pip install numpy matplotlib graphviz jupyter scikit-learn
 ```
+
+**Note**: `scikit-learn` is required for the binary classifier notebook to generate the moons dataset.
 
 ### Running the Notebook
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Timalk16/micrograd-course.git
 cd micrograd-course
 ```
 
-2. Open the Jupyter notebook:
+2. Open the Jupyter notebooks:
+
 ```bash
 jupyter notebook micrograd.ipynb
+# or
+jupyter notebook MLP_binary_classifier.ipynb
 ```
 
-3. Run cells sequentially to:
+3. **`micrograd.ipynb`** - Run cells sequentially to:
    - Understand numerical differentiation
    - Build the `Value` class step by step
    - Visualize computation graphs
    - Train a simple neural network
 
+4. **`MLP_binary_classifier.ipynb`** - Advanced example demonstrating:
+   - Binary classification on the moons dataset
+   - ReLU activation functions
+   - SVM max-margin loss function
+   - L2 regularization
+   - Decision boundary visualization
+
 ### Training a Neural Network
+
+**Basic Example** (`micrograd.ipynb`):
 
 ```python
 # Create a multi-layer perceptron
@@ -147,17 +165,57 @@ for epoch in range(20):
     # Forward pass
     ypred = [mlp(x) for x in xs]
     loss = sum([(yout - ygt)**2 for ygt, yout in zip(ys, ypred)])
-    
+
     # Backward pass
     for p in mlp.parameters():
         p.grad = 0.0
     loss.backward()
-    
+
     # Update weights
     for p in mlp.parameters():
         p.data += -0.05 * p.grad
-    
+
     print(f"Epoch {epoch}: Loss = {loss.data:.6f}")
+```
+
+**Binary Classification Example** (`MLP_binary_classifier.ipynb`):
+
+```python
+from sklearn.datasets import make_moons
+
+# Generate non-linearly separable dataset
+X, y = make_moons(n_samples=100, noise=0.1)
+y = y * 2 - 1  # Convert to -1 or 1
+
+# Create MLP with ReLU activation
+model = MLP(2, [16, 16, 1])  # 2 inputs, 2 hidden layers of 16, 1 output
+
+# Training with SVM loss and L2 regularization
+for epoch in range(100):
+    # Forward pass
+    inputs = [list(map(Value, xrow)) for xrow in X]
+    scores = list(map(model, inputs))
+    
+    # SVM max-margin loss
+    losses = [(1 + -yi*scorei).relu() for yi, scorei in zip(y, scores)]
+    data_loss = sum(losses) * (1 / len(losses))
+    
+    # L2 regularization
+    alpha = 1e-4
+    reg_loss = alpha * sum([p*p for p in model.parameters()])
+    total_loss = data_loss + reg_loss
+    
+    # Backward pass and update
+    model.zero_grad()
+    total_loss.backward()
+    
+    learning_rate = 1.0 - 0.9 * epoch / 100
+    for p in model.parameters():
+        p.data += -learning_rate * p.grad
+    
+    # Calculate accuracy
+    accuracy = [(yi > 0) == (scorei.data > 0) for yi, scorei in zip(y, scores)]
+    print(f"Epoch {epoch}: Loss = {total_loss.data:.4f}, Accuracy = {sum(accuracy)/len(accuracy)*100:.1f}%")
 ```
 
 ---
@@ -167,21 +225,25 @@ for epoch in range(20):
 This project demonstrates understanding of:
 
 ### Mathematical Foundations
+
 - **Calculus**: Derivatives, chain rule, partial derivatives
 - **Numerical Methods**: Finite difference approximation
 - **Linear Algebra**: Matrix operations, vector spaces
 
 ### Computer Science Concepts
+
 - **Graph Theory**: Topological sorting, DAG traversal
 - **Object-Oriented Design**: Class hierarchies, operator overloading
 - **Algorithm Design**: Efficient gradient computation
 
 ### Deep Learning Principles
+
 - **Backpropagation**: How gradients flow through networks
 - **Neural Network Architecture**: Layers, neurons, activations
 - **Optimization**: Gradient descent, parameter updates
 
 ### Software Engineering
+
 - **Code Organization**: Modular design, reusable components
 - **Visualization**: Graph representation and rendering
 - **Testing**: Comparison with established frameworks (PyTorch)
@@ -193,8 +255,9 @@ This project demonstrates understanding of:
 ```
 micrograd-course/
 │
-├── micrograd.ipynb          # Main implementation notebook
-├── README.md                # This file
+├── micrograd.ipynb              # Main implementation notebook
+├── MLP_binary_classifier.ipynb   # Binary classification example
+├── README.md                     # This file
 │
 └── Implementation Sections:
     ├── Numerical Differentiation
@@ -203,8 +266,27 @@ micrograd-course/
     ├── Backward Propagation
     ├── Graph Visualization
     ├── Neural Network Components
-    └── Training Example
+    ├── Training Example
+    └── Binary Classification (MLP_binary_classifier.ipynb)
 ```
+
+### Notebooks Overview
+
+#### `micrograd.ipynb`
+The foundational notebook that introduces the core concepts:
+- Building the autograd engine from scratch
+- Understanding automatic differentiation
+- Implementing neural network components
+- Basic training examples
+
+#### `MLP_binary_classifier.ipynb`
+An advanced practical example showcasing:
+- **Binary Classification**: Training an MLP on the moons dataset (non-linearly separable data)
+- **ReLU Activation**: Using Rectified Linear Units instead of tanh
+- **SVM Loss**: Implementing max-margin loss for classification
+- **Regularization**: L2 regularization to prevent overfitting
+- **Visualization**: Decision boundary plotting to understand model behavior
+- **Real-world Application**: Demonstrates how the micrograd engine can solve practical machine learning problems
 
 ---
 
@@ -213,10 +295,12 @@ micrograd-course/
 ### Gradient Computation
 
 The engine correctly computes gradients for:
+
 - **Addition**: `∂(a+b)/∂a = 1`, `∂(a+b)/∂b = 1`
 - **Multiplication**: `∂(a*b)/∂a = b`, `∂(a*b)/∂b = a`
 - **Power**: `∂(a^n)/∂a = n*a^(n-1)`
 - **Tanh**: `∂tanh(a)/∂a = 1 - tanh²(a)`
+- **ReLU**: `∂ReLU(a)/∂a = 1 if a > 0 else 0`
 - **Exponential**: `∂exp(a)/∂a = exp(a)`
 
 ### Verification
@@ -269,7 +353,7 @@ Thank you, Andrej, for sharing your knowledge and making complex concepts approa
 
 ---
 
-*Inspired by the micrograd implementation and educational content from the deep learning community, particularly the work on understanding neural networks from first principles.*
+_Inspired by the micrograd implementation and educational content from the deep learning community, particularly the work on understanding neural networks from first principles._
 
 ---
 
@@ -280,4 +364,3 @@ Thank you, Andrej, for sharing your knowledge and making complex concepts approa
 ⭐ Star this repo if you find it helpful!
 
 </div>
-
