@@ -18,6 +18,8 @@
 
 This project is an educational implementation of **micrograd** - a minimal autograd engine that demonstrates the fundamental principles behind automatic differentiation and neural network training. Built from scratch using only Python and NumPy, this implementation provides deep insights into how modern deep learning frameworks like PyTorch and TensorFlow work under the hood.
 
+> **Special Thanks**: This project is based on the excellent educational work by [Andrej Karpathy](https://github.com/karpathy) and his micrograd implementation. His insightful videos and explanations on building neural networks from scratch have been instrumental in understanding the fundamentals of automatic differentiation and backpropagation. Check out his [micrograd repository](https://github.com/karpathy/micrograd) and educational content for more deep learning insights!
+
 ### What is Autograd?
 
 Automatic differentiation (autograd) is the technique that powers modern deep learning. Instead of manually computing derivatives, autograd engines automatically track operations and compute gradients using the chain rule, enabling efficient backpropagation through complex computational graphs.
@@ -238,7 +240,7 @@ This project is ideal for:
 
 - This is an educational implementation focused on clarity over performance
 - For production use, consider established frameworks like PyTorch or TensorFlow
-- The implementation follows the micrograd approach popularized by Andrej Karpathy
+- The implementation follows the micrograd approach created by Andrej Karpathy
 
 ---
 
@@ -256,7 +258,18 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-Inspired by the micrograd implementation and educational content from the deep learning community, particularly the work on understanding neural networks from first principles.
+This project would not have been possible without the incredible educational work of **Andrej Karpathy**. His micrograd project and detailed video explanations provided the foundation and inspiration for this implementation.
+
+- **Andrej Karpathy** - Creator of micrograd and educator who makes deep learning accessible
+  - [micrograd GitHub Repository](https://github.com/karpathy/micrograd)
+  - [YouTube Channel](https://www.youtube.com/@AndrejKarpathy) - Excellent educational videos on neural networks and deep learning
+  - His teaching style of building from first principles has been invaluable in understanding how modern deep learning frameworks work under the hood
+
+Thank you, Andrej, for sharing your knowledge and making complex concepts approachable through hands-on implementation!
+
+---
+
+*Inspired by the micrograd implementation and educational content from the deep learning community, particularly the work on understanding neural networks from first principles.*
 
 ---
 
